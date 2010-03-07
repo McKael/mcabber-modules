@@ -1,5 +1,6 @@
 
-if INSTALL_HEADERS
+if INSTALL_MODULE_EXTSAY
+
 pkglib_LTLIBRARIES = libextsay.la
 libextsay_la_SOURCES = extsay.c
 libextsay_la_LDFLAGS = -module -avoid-version -shared

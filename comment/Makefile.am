@@ -1,5 +1,6 @@
 
-if INSTALL_HEADERS
+if INSTALL_MODULE_COMMENT
+
 pkglib_LTLIBRARIES = libcomment.la
 libcomment_la_SOURCES = comment.c
 libcomment_la_LDFLAGS = -module -avoid-version -shared

@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([mcabber-modules],[0.10.0-dev],[mcabber@lilotux.net])
+AC_INIT([mcabber],[0.10.0-dev],[mcabber@lilotux.net])
 AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER([config-modules.h])
 
@@ -60,6 +60,8 @@ AC_CHECK_FUNCS([alarm arc4random bzero gethostbyname gethostname inet_ntoa \
                 iswblank])
 
 
+PKG_CHECK_MODULES(MCABBER, mcabber >= 0.10.0)
+
 # Check for glib
 AM_PATH_GLIB_2_0(2.14.0,
                  [AC_DEFINE([HAVE_GLIB_REGEX], 1,
@@ -68,7 +70,7 @@ AM_PATH_GLIB_2_0(2.14.0,
                                   [g_list_append], ["$gmodule_module"])],
                  [g_regex_new "$gmodule_module"])
 
-PKG_CHECK_MODULES(MCABBER, mcabber >= 0.10.0)
+PKG_CHECK_MODULES(GMODULES, gmodule-2.0)
 
 AC_ARG_ENABLE(debug,
     [AC_HELP_STRING(--enable-debug, add development compilation options)],
@@ -91,10 +93,24 @@ fi
 # We need _GNU_SOURCE for strptime() and strcasestr()
 CFLAGS="$CFLAGS -D_GNU_SOURCE"
 
-AC_ARG_ENABLE(all-modules, [  --enable-all-modules    enable all modules],
+AC_ARG_ENABLE(all-modules,
+              AC_HELP_STRING([--enable-all-modules], [enable all modules]),
               enable_all_modules=$enableval)
 
-AM_CONDITIONAL([INSTALL_HEADERS], [test x$enable_all_modules = xyes])
+AC_ARG_ENABLE(module-comment,
+              AC_HELP_STRING([--enable-module-comment], [enable module comment]),
+              enable_module_comment=$enableval)
+AC_ARG_ENABLE(module-extsay,
+              AC_HELP_STRING([--enable-module-extsay], [enable module extsay]),
+              enable_module_extsay=$enableval)
+
+AM_CONDITIONAL([INSTALL_MODULE_COMMENT],
+               [test x"${enable_all_modules}" = x"yes" -o \
+                     x"${enable_module_comment}" = x"yes"])
+
+AM_CONDITIONAL([INSTALL_MODULE_EXTSAY],
+               [test x"${enable_all_modules}" = x"yes" -o \
+                     x"${enable_module_extsay}" = x"yes"])
 
 AC_CONFIG_FILES([comment/Makefile
                  extsay/Makefile
