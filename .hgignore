@@ -1,0 +1,26 @@
+syntax: glob
+
+Makefile
+Makefile.in
+*.[oa]
+*.l[oa]
+*.so
+.libs
+.deps
+
+autom4te.cache
+aclocal.m4
+config-modules.h*
+config.{log,cache,guess,status,sub}
+
+configure
+depcomp
+libtool
+ltmain.sh
+missing
+mkinstalldirs
+install-sh
+
+*.sw?
+cscope.out
+tags
