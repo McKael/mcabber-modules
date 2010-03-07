@@ -20,6 +20,7 @@ ltmain.sh
 missing
 mkinstalldirs
 install-sh
+stamp-h1
 
 *.sw?
 cscope.out

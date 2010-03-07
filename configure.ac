@@ -68,8 +68,7 @@ AM_PATH_GLIB_2_0(2.14.0,
                                   [g_list_append], ["$gmodule_module"])],
                  [g_regex_new "$gmodule_module"])
 
-# Export $libexecdir to the source tree
-AC_DEFINE_DIR(PKGLIB_DIR, "${libdir}/${PACKAGE}", [Modules directory])
+PKG_CHECK_MODULES(MCABBER, mcabber >= 0.10.0)
 
 AC_ARG_ENABLE(debug,
     [AC_HELP_STRING(--enable-debug, add development compilation options)],
@@ -91,6 +90,11 @@ fi
 
 # We need _GNU_SOURCE for strptime() and strcasestr()
 CFLAGS="$CFLAGS -D_GNU_SOURCE"
+
+AC_ARG_ENABLE(all-modules, [  --enable-all-modules    enable all modules],
+              enable_all_modules=$enableval)
+
+AM_CONDITIONAL([INSTALL_HEADERS], [test x$enable_all_modules = xyes])
 
 AC_CONFIG_FILES([comment/Makefile
                  extsay/Makefile
