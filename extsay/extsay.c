@@ -69,10 +69,12 @@ static char* spawn_editor() {
 
   argv[1] = tmpfile;
 
+  endwin();
   ret = g_spawn_sync(NULL, argv, NULL,
                      G_SPAWN_CHILD_INHERITS_STDIN|G_SPAWN_SEARCH_PATH,
                      NULL, NULL, NULL, NULL, &exit_status, &err);
 
+  raw();
   readline_refresh_screen();
 
   if (!ret) {
