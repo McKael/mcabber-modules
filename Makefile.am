@@ -1,1 +1,1 @@
-SUBDIRS = comment extsay
+SUBDIRS = comment extsay clock
