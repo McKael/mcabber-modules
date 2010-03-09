@@ -90,11 +90,10 @@ static char* spawn_editor() {
 
   msg = load_message_from_file(tmpfile);
 
-  if (g_unlink(tmpfile) != 0) {
-    scr_LogPrint(LPRINT_NORMAL,"Warning, could not remove temp file.");
-  }
+  if (g_unlink(tmpfile) != 0)
+    scr_LogPrint(LPRINT_NORMAL, "Warning, could not remove temp file.");
 
- return msg;
+  return msg;
 }
 
 static void do_extsay(char *args)
@@ -112,6 +111,11 @@ static void extsay_init(void)
   /* Add command */
   cmd_add("extsay", "Use external editor to write a message",
           0, 0, do_extsay, NULL);
+  scr_LogPrint(LPRINT_NORMAL, "Loading module extsay...\n"
+               "** Be careful, everything is on hold while you run the "
+               "external editor.\n"
+               "** Do not run it for too long!"
+               );
 }
 
 /* Deinitialization */
