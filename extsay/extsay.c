@@ -34,10 +34,17 @@ static void extsay_uninit(void);
 
 /* Module description */
 module_info_t info_extsay = {
-        .mcabber_version = "0.10.0",
-        .requires        = NULL,
-        .init            = extsay_init,
-        .uninit          = extsay_uninit,
+        .branch         = MCABBER_BRANCH,
+        .api            = MCABBER_API_VERSION,
+        .version        = "0.01",
+        .description    = "Use external editor to send a message\n"
+                          "WARNING: use at your own risk - "
+                          "mcabber is stuck while you write a message, "
+                          "this is not recommended!",
+        .requires       = NULL,
+        .init           = extsay_init,
+        .uninit         = extsay_uninit,
+        .next           = NULL,
 };
 
 // XXX Not very clean, internal function...

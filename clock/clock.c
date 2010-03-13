@@ -35,10 +35,15 @@ static void clock_uninit(void);
 
 /* Module description */
 module_info_t info_clock = {
-        .mcabber_version = "0.10.0",
-        .requires        = NULL,
-        .init            = clock_init,
-        .uninit          = clock_uninit,
+        .branch         = MCABBER_BRANCH,
+        .api            = MCABBER_API_VERSION,
+        .version        = "1.00",
+        .description    = "Simple clock module\n"
+                          "Uses the 'info' option to display the time.",
+        .requires       = NULL,
+        .init           = clock_init,
+        .uninit         = clock_uninit,
+        .next           = NULL,
 };
 
 static guint srcno = 0;

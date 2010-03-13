@@ -26,10 +26,15 @@ static void comment_uninit(void);
 
 /* Module description */
 module_info_t info_comment = {
-        .mcabber_version = "0.10.0",
-        .requires        = NULL,
-        .init            = comment_init,
-        .uninit          = comment_uninit,
+        .branch         = MCABBER_BRANCH,
+        .api            = MCABBER_API_VERSION,
+        .version        = "1.00",
+        .description    = "Comment (no-op) pseudo-command\n"
+                          "(Pretty useless!)",
+        .requires       = NULL,
+        .init           = comment_init,
+        .uninit         = comment_uninit,
+        .next           = NULL,
 };
 
 static void do_comment(char *args)
