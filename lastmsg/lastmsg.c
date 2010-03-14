@@ -8,8 +8,6 @@
   you are away (or not available) if they contain your nickname.
   When you're back, you can display them in the status window with
   the /lastmsg command.
-  Note that this module is dumb: if your nick is foo and somebody
-  says "foobar" the message will be stored!
 
 This module is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -28,7 +26,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <mcabber/modules.h>
 #include <mcabber/commands.h>
 #include <mcabber/hooks.h>
-#include <mcabber/xmpp.h>
 #include <mcabber/logprint.h>
 
 static void lastmsg_init(void);
@@ -38,7 +35,7 @@ static void lastmsg_uninit(void);
 module_info_t info_lastmsg = {
         .branch         = MCABBER_BRANCH,
         .api            = MCABBER_API_VERSION,
-        .version        = "0.01",
+        .version        = "0.02",
         .description    = "Add a command /lastmsg",
         .requires       = NULL,
         .init           = lastmsg_init,
@@ -78,7 +75,7 @@ static void last_message_hh(guint32 hid, hk_arg_t *args, gpointer userdata)
 {
   enum imstatus status;
   const gchar *bjid, *res, *msg;
-  gboolean muc = FALSE;
+  gboolean muc = FALSE, urgent = FALSE;
 
   status = xmpp_getstatus();
 
@@ -98,23 +95,14 @@ static void last_message_hh(guint32 hid, hk_arg_t *args, gpointer userdata)
     else if (!g_strcmp0(args->name, "groupchat")) {
       if (!g_strcmp0(args->value, "true"))
         muc = TRUE;
+    } else if (!g_strcmp0(args->name, "urgent")) {
+      if (!g_strcmp0(args->value, "true"))
+        urgent = TRUE;
     }
   }
 
-  if (muc && bjid && res && msg) {
-    GSList *room_elt;
+  if (muc && urgent && bjid && res && msg) {
     struct lastm_T *lastm_item;
-    const gchar *mynick = NULL;
-
-    room_elt = roster_find(bjid, jidsearch, ROSTER_TYPE_ROOM);
-    if (room_elt)
-      mynick = buddy_getnickname(room_elt->data);
-
-    if (!mynick || !g_strcmp0(res, mynick))
-      return;
-
-    if (!g_strstr_len(msg, -1, mynick))
-      return;
 
     lastm_item = g_new(struct lastm_T, 1);
     lastm_item->mucname  = g_strdup(bjid);
@@ -155,7 +143,7 @@ static void lastmsg_init(void)
   hk_add_handler(last_status_hh, HOOK_MY_STATUS_CHANGE, NULL);
 }
 
-/* Deinitialization */
+/* Uninitialization */
 static void lastmsg_uninit(void)
 {
   /* Unregister command */
