@@ -106,6 +106,9 @@ AC_ARG_ENABLE(module-comment,
 AC_ARG_ENABLE(module-extsay,
               AC_HELP_STRING([--enable-module-extsay], [enable module extsay]),
               enable_module_extsay=$enableval)
+AC_ARG_ENABLE(module-lastmsg,
+              AC_HELP_STRING([--enable-module-lastmsg], [enable module lastmsg]),
+              enable_module_lastmsg=$enableval)
 
 AM_CONDITIONAL([INSTALL_MODULE_CLOCK],
                [test x"${enable_all_modules}" = x"yes" -o \
@@ -119,8 +122,13 @@ AM_CONDITIONAL([INSTALL_MODULE_EXTSAY],
                [test x"${enable_all_modules}" = x"yes" -o \
                      x"${enable_module_extsay}" = x"yes"])
 
+AM_CONDITIONAL([INSTALL_MODULE_LASTMSG],
+               [test x"${enable_all_modules}" = x"yes" -o \
+                     x"${enable_module_lastmsg}" = x"yes"])
+
 AC_CONFIG_FILES([clock/Makefile
                  comment/Makefile
                  extsay/Makefile
+                 lastmsg/Makefile
                  Makefile])
 AC_OUTPUT
