@@ -62,7 +62,7 @@ static gboolean clock_cb(void)
   now = localtime(&now_t);
   strftime(buf, sizeof(buf), strfmt, now);
   settings_set(SETTINGS_TYPE_OPTION, "info", buf);
-  scr_UpdateChatStatus(TRUE);
+  scr_update_chat_status(TRUE);
 
   if (precision_onesec)
     return TRUE;  // Let's be called again in 1 second
@@ -109,7 +109,7 @@ static void clock_uninit(void)
   g_free(backup_info);
   g_free(strfmt);
   backup_info = strfmt = NULL; // probably useless...
-  scr_UpdateChatStatus(TRUE);
+  scr_update_chat_status(TRUE);
 }
 
 /* vim: set expandtab cindent cinoptions=>2\:2(0:  For Vim users... */
