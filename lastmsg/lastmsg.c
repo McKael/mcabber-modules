@@ -45,6 +45,8 @@ module_info_t info_lastmsg = {
 
 static GSList *lastmsg_list;
 
+static guint last_message_hid, last_status_hid;
+
 struct lastm_T {
     gchar *mucname;
     gchar *nickname;
@@ -71,7 +73,8 @@ static void do_lastmsg(char *args)
   lastmsg_list = NULL;
 }
 
-static void last_message_hh(guint32 hid, hk_arg_t *args, gpointer userdata)
+static guint last_message_hh(const gchar *hookname, hk_arg_t *args,
+                             gpointer userdata)
 {
   enum imstatus status;
   const gchar *bjid, *res, *msg;
@@ -80,7 +83,7 @@ static void last_message_hh(guint32 hid, hk_arg_t *args, gpointer userdata)
   status = xmpp_getstatus();
 
   if (status != notavail && status != away)
-    return;
+    return HOOK_HANDLER_RESULT_ALLOW_MORE_HOOKS;
 
   bjid = res = NULL;
   msg = NULL;
@@ -110,9 +113,11 @@ static void last_message_hh(guint32 hid, hk_arg_t *args, gpointer userdata)
     lastm_item->msg      = g_strdup(msg);
     lastmsg_list = g_slist_append(lastmsg_list, lastm_item);
   }
+  return HOOK_HANDLER_RESULT_ALLOW_MORE_HOOKS;
 }
 
-static void last_status_hh(guint32 hid, hk_arg_t *args, gpointer userdata)
+static guint last_status_hh(const gchar *hookname, hk_arg_t *args,
+                            gpointer userdata)
 {
   gboolean not_away = FALSE;
 
@@ -126,11 +131,13 @@ static void last_status_hh(guint32 hid, hk_arg_t *args, gpointer userdata)
       }
     }
   }
-  if (!not_away || !lastmsg_list) return;
+  if (!not_away || !lastmsg_list)
+    return HOOK_HANDLER_RESULT_ALLOW_MORE_HOOKS;
 
   scr_log_print(LPRINT_NORMAL, "Looks like you're back...");
   scr_log_print(LPRINT_NORMAL, "I've got news for you, use /lastmsg to "
                 "read your messages!");
+  return HOOK_HANDLER_RESULT_ALLOW_MORE_HOOKS;
 }
 
 /* Initialization */
@@ -139,8 +146,10 @@ static void lastmsg_init(void)
   /* Add command */
   cmd_add("lastmsg", "Display last missed messages", 0, 0, do_lastmsg, NULL);
 
-  hk_add_handler(last_message_hh, HOOK_MESSAGE_IN, NULL);
-  hk_add_handler(last_status_hh, HOOK_MY_STATUS_CHANGE, NULL);
+  last_message_hid = hk_add_handler(last_message_hh, HOOK_POST_MESSAGE_IN,
+                                    G_PRIORITY_DEFAULT_IDLE, NULL);
+  last_status_hid  = hk_add_handler(last_status_hh, HOOK_MY_STATUS_CHANGE,
+                                    G_PRIORITY_DEFAULT_IDLE, NULL);
 }
 
 /* Uninitialization */
@@ -148,8 +157,8 @@ static void lastmsg_uninit(void)
 {
   /* Unregister command */
   cmd_del("lastmsg");
-  hk_del_handler(last_message_hh, NULL);
-  hk_del_handler(last_status_hh, NULL);
+  hk_del_handler(HOOK_POST_MESSAGE_IN, last_message_hid);
+  hk_del_handler(HOOK_MY_STATUS_CHANGE, last_status_hid);
 
   for (GSList *li = lastmsg_list; li ; li = g_slist_next(li)) {
     struct lastm_T *lastm_item = li->data;
