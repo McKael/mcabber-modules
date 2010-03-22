@@ -1,1 +1,1 @@
-SUBDIRS = clock comment extsay lastmsg
+SUBDIRS = clock comment extsay lastmsg xttitle
