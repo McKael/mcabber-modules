@@ -55,12 +55,14 @@ struct lastm_T {
 
 static void do_lastmsg(char *args)
 {
+  GSList *li;
+
   if (!lastmsg_list) {
     scr_log_print(LPRINT_NORMAL, "You have no new message.");
     return;
   }
 
-  for (GSList *li = lastmsg_list; li ; li = g_slist_next(li)) {
+  for (li = lastmsg_list; li ; li = g_slist_next(li)) {
     struct lastm_T *lastm_item = li->data;
     scr_LogPrint(LPRINT_NORMAL, "In <#%s>, \"%s\" said:\n%s",
                  lastm_item->mucname, lastm_item->nickname,
@@ -155,12 +157,14 @@ static void lastmsg_init(void)
 /* Uninitialization */
 static void lastmsg_uninit(void)
 {
+  GSList *li;
+
   /* Unregister command */
   cmd_del("lastmsg");
   hk_del_handler(HOOK_POST_MESSAGE_IN, last_message_hid);
   hk_del_handler(HOOK_MY_STATUS_CHANGE, last_status_hid);
 
-  for (GSList *li = lastmsg_list; li ; li = g_slist_next(li)) {
+  for (li = lastmsg_list; li ; li = g_slist_next(li)) {
     struct lastm_T *lastm_item = li->data;
     g_free(lastm_item->mucname);
     g_free(lastm_item->nickname);
