@@ -83,7 +83,7 @@ static guint last_message_hh(const gchar *hookname, hk_arg_t *args,
   status = xmpp_getstatus();
 
   if (status != notavail && status != away)
-    return HOOK_HANDLER_RESULT_ALLOW_MORE_HOOKS;
+    return HOOK_HANDLER_RESULT_ALLOW_MORE_HANDLERS;
 
   bjid = res = NULL;
   msg = NULL;
@@ -113,7 +113,7 @@ static guint last_message_hh(const gchar *hookname, hk_arg_t *args,
     lastm_item->msg      = g_strdup(msg);
     lastmsg_list = g_slist_append(lastmsg_list, lastm_item);
   }
-  return HOOK_HANDLER_RESULT_ALLOW_MORE_HOOKS;
+  return HOOK_HANDLER_RESULT_ALLOW_MORE_HANDLERS;
 }
 
 static guint last_status_hh(const gchar *hookname, hk_arg_t *args,
@@ -132,12 +132,12 @@ static guint last_status_hh(const gchar *hookname, hk_arg_t *args,
     }
   }
   if (!not_away || !lastmsg_list)
-    return HOOK_HANDLER_RESULT_ALLOW_MORE_HOOKS;
+    return HOOK_HANDLER_RESULT_ALLOW_MORE_HANDLERS;
 
   scr_log_print(LPRINT_NORMAL, "Looks like you're back...");
   scr_log_print(LPRINT_NORMAL, "I've got news for you, use /lastmsg to "
                 "read your messages!");
-  return HOOK_HANDLER_RESULT_ALLOW_MORE_HOOKS;
+  return HOOK_HANDLER_RESULT_ALLOW_MORE_HANDLERS;
 }
 
 /* Initialization */
