@@ -100,7 +100,7 @@ static guint last_message_hh(const gchar *hookname, hk_arg_t *args,
     else if (!g_strcmp0(args->name, "groupchat")) {
       if (!g_strcmp0(args->value, "true"))
         muc = TRUE;
-    } else if (!g_strcmp0(args->name, "urgent")) {
+    } else if (!g_strcmp0(args->name, "attention")) {
       if (!g_strcmp0(args->value, "true"))
         urgent = TRUE;
     }
