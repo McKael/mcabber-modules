@@ -2,7 +2,7 @@
  * Copyright (C) 2010 Mikael Berthe <mikael@lilotux.net>
 
 
-  Module "libkillpresence" -- Ignore current presence of an item
+  Module "killpresence" -- Ignore current presence of an item
 
 This module is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
