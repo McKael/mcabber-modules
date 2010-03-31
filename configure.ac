@@ -110,6 +110,10 @@ AC_ARG_ENABLE(module-info_msgcount,
               AC_HELP_STRING([--enable-module-info_msgcount],
                              [enable module info_msgcount]),
               enable_module_info_msgcount=$enableval)
+AC_ARG_ENABLE(module-killpresence,
+              AC_HELP_STRING([--enable-module-killpresence],
+                             [enable module killpresence]),
+              enable_module_lastmsg=$enableval)
 AC_ARG_ENABLE(module-lastmsg,
               AC_HELP_STRING([--enable-module-lastmsg], [enable module lastmsg]),
               enable_module_lastmsg=$enableval)
@@ -130,6 +134,10 @@ AM_CONDITIONAL([INSTALL_MODULE_INFO_MSGCOUNT],
                [test x"${enable_all_modules}" = x"yes" -o \
                      x"${enable_module_info_msgcount}" = x"yes"])
 
+AM_CONDITIONAL([INSTALL_MODULE_KILLPRESENCE],
+               [test x"${enable_all_modules}" = x"yes" -o \
+                     x"${enable_module_killpresence}" = x"yes"])
+
 AM_CONDITIONAL([INSTALL_MODULE_LASTMSG],
                [test x"${enable_all_modules}" = x"yes" -o \
                      x"${enable_module_lastmsg}" = x"yes"])
@@ -138,6 +146,7 @@ AC_CONFIG_FILES([clock/Makefile
                  comment/Makefile
                  extsay/Makefile
                  info_msgcount/Makefile
+                 killpresence/Makefile
                  lastmsg/Makefile
                  Makefile])
 AC_OUTPUT

@@ -1,1 +1,1 @@
-SUBDIRS = clock comment extsay info_msgcount lastmsg
+SUBDIRS = clock comment extsay info_msgcount killpresence lastmsg
