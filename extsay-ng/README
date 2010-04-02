@@ -2,6 +2,7 @@
     ** Module extsay-ng **
 
 To use this module, you have to be running the screen utility.
+MCabber's FIFO system must be enabled.
 
 Copy the script extsay.sh to some place on your system and set the mcabber
 option 'extsay_script_path' to the file path.  You can set it in your mcabber
@@ -11,10 +12,11 @@ configuration file.
 
 When you type /extsay, the module will send a command to screen to open a
 new window and run the helper script in it.
+This helper scripts launches an editor ($EDITOR), and sends the message using
+the FIFO mechanism.
 
-WARNING: If you do not provide a JID, the selected user _at the time you
-close the editor_ will be used.  Be careful not to select another contact
-while you're editing your message!
+Please note that this script will not work if the editor does detach from
+the terminal.
 
 Hope you find this module useful, do not hesitate to send patches for
 improvements!

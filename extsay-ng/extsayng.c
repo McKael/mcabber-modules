@@ -45,7 +45,7 @@ module_info_t info_extsayng = {
 };
 
 // Forks and run the external helper script
-static void screen_run_script(const char *args)
+static void screen_run_script(const gchar *args)
 {
   GError *err = NULL;
   gchar *argv[] = { "screen", "-r", "-X", "screen", NULL, NULL, NULL };
@@ -65,19 +65,34 @@ static void screen_run_script(const char *args)
     argv[5] = ".";
 
   ret = g_spawn_async(NULL, argv, NULL,
-                      G_SPAWN_SEARCH_PATH, //|
-                      //  G_SPAWN_STDOUT_TO_DEV_NULL|G_SPAWN_STDERR_TO_DEV_NULL,
+                      G_SPAWN_SEARCH_PATH |
+                        G_SPAWN_STDOUT_TO_DEV_NULL|G_SPAWN_STDERR_TO_DEV_NULL,
                       NULL, NULL, NULL, &err);
 
   if (!ret)
     scr_LogPrint(LPRINT_NORMAL, err->message);
 }
 
-static void do_extsayng(char *args)
+static void do_extsayng(gchar *args)
 {
-  // TODO - check the selected item is a real contact
-  // (not a special buffer, nor a group...)
-  // TODO provide JID if it isn't provided
+  gpointer bud;
+
+  if (!args || !*args || !g_strcmp0(args, ".")) {
+    if (!current_buddy) {
+      scr_LogPrint(LPRINT_NORMAL, "Please select a buddy.");
+      return;
+    }
+
+    bud = BUDDATA(current_buddy);
+    if (!(buddy_gettype(bud) &
+          (ROSTER_TYPE_USER|ROSTER_TYPE_AGENT|ROSTER_TYPE_ROOM))) {
+      scr_LogPrint(LPRINT_NORMAL, "This is not a user.");
+      return;
+    }
+
+    args = (gchar*)buddy_getjid(bud);
+  }
+
   screen_run_script(args);
 }
 
