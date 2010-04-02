@@ -98,14 +98,21 @@ AC_ARG_ENABLE(all-modules,
               enable_all_modules=$enableval)
 
 AC_ARG_ENABLE(module-clock,
-              AC_HELP_STRING([--enable-module-clock], [enable module clock]),
+              AC_HELP_STRING([--enable-module-clock],
+                             [enable module clock]),
               enable_module_clock=$enableval)
 AC_ARG_ENABLE(module-comment,
-              AC_HELP_STRING([--enable-module-comment], [enable module comment]),
+              AC_HELP_STRING([--enable-module-comment],
+                             [enable module comment]),
               enable_module_comment=$enableval)
-AC_ARG_ENABLE(module-extsay,
-              AC_HELP_STRING([--enable-module-extsay], [enable module extsay]),
-              enable_module_extsay=$enableval)
+AC_ARG_ENABLE(module-extsayng,
+              AC_HELP_STRING([--enable-module-extsayng],
+                             [enable module extsayng]),
+              enable_module_extsayng=$enableval)
+AC_ARG_ENABLE(module-extsay_old,
+              AC_HELP_STRING([--enable-module-extsay_old],
+                             [enable module extsay_old]),
+              enable_module_extsay_old=$enableval)
 AC_ARG_ENABLE(module-info_msgcount,
               AC_HELP_STRING([--enable-module-info_msgcount],
                              [enable module info_msgcount]),
@@ -115,7 +122,8 @@ AC_ARG_ENABLE(module-killpresence,
                              [enable module killpresence]),
               enable_module_lastmsg=$enableval)
 AC_ARG_ENABLE(module-lastmsg,
-              AC_HELP_STRING([--enable-module-lastmsg], [enable module lastmsg]),
+              AC_HELP_STRING([--enable-module-lastmsg],
+                             [enable module lastmsg]),
               enable_module_lastmsg=$enableval)
 
 AM_CONDITIONAL([INSTALL_MODULE_CLOCK],
@@ -126,9 +134,13 @@ AM_CONDITIONAL([INSTALL_MODULE_COMMENT],
                [test x"${enable_all_modules}" = x"yes" -o \
                      x"${enable_module_comment}" = x"yes"])
 
-AM_CONDITIONAL([INSTALL_MODULE_EXTSAY],
+AM_CONDITIONAL([INSTALL_MODULE_EXTSAYNG],
                [test x"${enable_all_modules}" = x"yes" -o \
-                     x"${enable_module_extsay}" = x"yes"])
+                     x"${enable_module_extsayng}" = x"yes"])
+
+AM_CONDITIONAL([INSTALL_MODULE_EXTSAY_OLD],
+               [test x"${enable_all_modules}" = x"yes" -o \
+                     x"${enable_module_extsay_old}" = x"yes"])
 
 AM_CONDITIONAL([INSTALL_MODULE_INFO_MSGCOUNT],
                [test x"${enable_all_modules}" = x"yes" -o \
@@ -144,7 +156,8 @@ AM_CONDITIONAL([INSTALL_MODULE_LASTMSG],
 
 AC_CONFIG_FILES([clock/Makefile
                  comment/Makefile
-                 extsay/Makefile
+                 extsay-ng/Makefile
+                 extsay-old/Makefile
                  info_msgcount/Makefile
                  killpresence/Makefile
                  lastmsg/Makefile

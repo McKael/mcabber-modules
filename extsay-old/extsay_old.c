@@ -2,7 +2,7 @@
    Copyright 2009,2010 Andreas Fett
    Copyright 2010 Mikael Berthe
 
-  Module "extsay"     -- adds a /extsay command
+  Module "extsay_old" -- adds a /extsay_old command
                          Spawns an external editor
   Original code from Andreas Fett.
 
@@ -29,11 +29,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <mcabber/commands.h>
 #include <mcabber/screen.h>
 
-static void extsay_init(void);
-static void extsay_uninit(void);
+static void extsay_old_init(void);
+static void extsay_old_uninit(void);
 
 /* Module description */
-module_info_t info_extsay = {
+module_info_t info_extsay_old = {
         .branch         = MCABBER_BRANCH,
         .api            = MCABBER_API_VERSION,
         .version        = "0.01",
@@ -42,8 +42,8 @@ module_info_t info_extsay = {
                           "mcabber is stuck while you write a message, "
                           "this is not recommended!",
         .requires       = NULL,
-        .init           = extsay_init,
-        .uninit         = extsay_uninit,
+        .init           = extsay_old_init,
+        .uninit         = extsay_old_uninit,
         .next           = NULL,
 };
 
@@ -103,7 +103,7 @@ static char* spawn_editor() {
   return msg;
 }
 
-static void do_extsay(char *args)
+static void do_extsay_old(char *args)
 {
   char *msg = spawn_editor();
   if (msg) {
@@ -113,12 +113,12 @@ static void do_extsay(char *args)
 }
 
 /* Initialization */
-static void extsay_init(void)
+static void extsay_old_init(void)
 {
   /* Add command */
-  cmd_add("extsay", "Use external editor to write a message",
-          0, 0, do_extsay, NULL);
-  scr_LogPrint(LPRINT_NORMAL, "Loading module extsay...\n"
+  cmd_add("extsay_old", "Use external editor to write a message",
+          0, 0, do_extsay_old, NULL);
+  scr_LogPrint(LPRINT_NORMAL, "Loading module extsay_old...\n"
                "** Be careful, everything is on hold while you run the "
                "external editor.\n"
                "** Do not run it for too long!"
@@ -126,10 +126,10 @@ static void extsay_init(void)
 }
 
 /* Deinitialization */
-static void extsay_uninit(void)
+static void extsay_old_uninit(void)
 {
   /* Unregister command */
-  cmd_del("extsay");
+  cmd_del("extsay_old");
 }
 
 /* vim: set expandtab cindent cinoptions=>2\:2(0:  For Vim users... */
