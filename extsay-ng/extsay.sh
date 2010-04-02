@@ -9,8 +9,11 @@
 # MiKael, 2010-04-02
 
 FIFOPATH="$HOME/.mcabber/mcabber.fifo"
-tmpdir=${TMPDIR:="/tmp"}
+
+tmpdir=${TMPDIR:=$TMP}
+tmpdir=${tmpdir:="/tmp"}
 editor=${EDITOR:="vi"}
+
 jid="."
 
 # Use argument as a recipient JID, if it is provided
@@ -19,7 +22,7 @@ jid="."
 # Leave if the FIFO is not available
 [ -p $FIFOPATH ] || exit 255
 
-tf=$(mktemp --tmpdir=$tmpdir extsay-XXXXXX) || exit 255
+tf=$(mktemp $tmpdir/extsay-XXXXXX) || exit 255
 
 # This will not work if the editor runs in the background!
 $editor $tf
@@ -30,5 +33,7 @@ if [ -s $tf ]; then
     echo $cmd >> $FIFOPATH
 fi
 
-rm $tf
+# Do not remove the file too soon
+(sleep 20 ; rm $tf)&
+
 exit 0
