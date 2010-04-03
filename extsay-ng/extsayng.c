@@ -125,6 +125,8 @@ static void do_extsayng(gchar *args)
       char *res_utf8 = to_utf8(res);
       fjid = g_strdup_printf("%s%c%s", args, JID_RESOURCE_SEPARATOR, res_utf8);
       g_free(res_utf8);
+    } else {
+      fjid = g_strdup(args);
     }
   } else {
     fjid = to_utf8(args);
