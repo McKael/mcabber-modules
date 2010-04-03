@@ -26,7 +26,7 @@ jid="."
 # Leave if the FIFO is not available
 [ -p $FIFOPATH ] || exit 255
 
-tf=$(mktemp $tmpdir/extsay-$jid-XXXXXX) || exit 255
+tf=$(mktemp $tmpdir/extsay-${jid%%/*}-XXXXXX) || exit 255
 
 if [ x$winsplit = x"winsplit" ]; then
     screen -r -X other
