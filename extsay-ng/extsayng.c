@@ -99,8 +99,7 @@ static void screen_run_script(const gchar *args)
 static void do_extsayng(gchar *args)
 {
   gboolean expandfjid = FALSE;
-  char *xfjid = NULL;
-  char *res_utf8 = NULL, *fjid_utf8 = NULL;
+  gchar *fjid;
 
   if (args && !strncmp(args, "." JID_RESOURCE_SEPARATORSTR, 2))
     expandfjid = TRUE;
@@ -123,22 +122,20 @@ static void do_extsayng(gchar *args)
 
     args = (gchar*)buddy_getjid(bud);
     if (expandfjid && *res) {
-      res_utf8 = to_utf8(res);
-      xfjid = g_strdup_printf("%s%c%s", args, JID_RESOURCE_SEPARATOR, res_utf8);
-      args = xfjid;
+      char *res_utf8 = to_utf8(res);
+      fjid = g_strdup_printf("%s%c%s", args, JID_RESOURCE_SEPARATOR, res_utf8);
+      g_free(res_utf8);
     }
   } else {
-    args = fjid_utf8 = to_utf8(args);
+    fjid = to_utf8(args);
   }
 
-  if (check_jid_syntax(args))
+  if (check_jid_syntax(fjid))
     scr_LogPrint(LPRINT_NORMAL, "Please specify a valid Jabber ID.");
   else
-    screen_run_script(args); // Launch helper script with resulting JID
+    screen_run_script(fjid); // Launch helper script with resulting JID
 
-  g_free(res_utf8);
-  g_free(fjid_utf8);
-  g_free(xfjid);
+  g_free(fjid);
 }
 
 static void extsayng_init(void)
