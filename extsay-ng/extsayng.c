@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <unistd.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/wait.h>
 #include <glib/gstdio.h>
 
@@ -97,9 +98,17 @@ static void screen_run_script(const gchar *args)
 
 static void do_extsayng(gchar *args)
 {
-  gpointer bud;
+  gboolean expandfjid = FALSE;
+  char *xfjid = NULL;
+  char *res_utf8 = NULL, *fjid_utf8 = NULL;
 
-  if (!args || !*args || !g_strcmp0(args, ".")) {
+  if (args && !strncmp(args, "." JID_RESOURCE_SEPARATORSTR, 2))
+    expandfjid = TRUE;
+
+  if (!args || !*args || expandfjid || !g_strcmp0(args, ".")) {
+    const gchar *res = args+2;
+    gpointer bud;
+
     if (!current_buddy) {
       scr_LogPrint(LPRINT_NORMAL, "Please select a buddy.");
       return;
@@ -113,9 +122,23 @@ static void do_extsayng(gchar *args)
     }
 
     args = (gchar*)buddy_getjid(bud);
+    if (expandfjid && *res) {
+      res_utf8 = to_utf8(res);
+      xfjid = g_strdup_printf("%s%c%s", args, JID_RESOURCE_SEPARATOR, res_utf8);
+      args = xfjid;
+    }
+  } else {
+    args = fjid_utf8 = to_utf8(args);
   }
 
-  screen_run_script(args);
+  if (check_jid_syntax(args))
+    scr_LogPrint(LPRINT_NORMAL, "Please specify a valid Jabber ID.");
+  else
+    screen_run_script(args); // Launch helper script with resulting JID
+
+  g_free(res_utf8);
+  g_free(fjid_utf8);
+  g_free(xfjid);
 }
 
 static void extsayng_init(void)
