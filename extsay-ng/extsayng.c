@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <mcabber/commands.h>
 #include <mcabber/settings.h>
 #include <mcabber/compl.h>
+#include <mcabber/utils.h>
 #include <mcabber/logprint.h>
 
 static void extsayng_init(void);
@@ -51,18 +52,20 @@ static void screen_run_script(const gchar *args)
   GError *err = NULL;
   gchar *argv[] = { "screen", "-r", "-X", "screen", NULL,
                     NULL, NULL, NULL, NULL };
-  gboolean ret;
   gchar strwinheight[32];
-  gboolean winsplit = settings_opt_get_int("extsay_split_win");
+  gchar *fpath;
+  gboolean winsplit, ret;
 
   // screen -r -X screen $path/extsay.sh [jid [winsplit [height]]]
-  argv[4] = (gchar*)settings_opt_get("extsay_script_path");
+  fpath = (gchar*)settings_opt_get("extsay_script_path");
 
   // Helper script path
-  if (!argv[4] || !argv[4][0]) {
+  if (!fpath || !fpath[0]) {
     scr_log_print(LPRINT_NORMAL, "Please set option 'extsay_script_path'.");
     return;
   }
+  fpath = expand_filename(fpath);
+  argv[4] = fpath;
 
   // Helper script parameter #1
   if (args && *args)
@@ -70,7 +73,8 @@ static void screen_run_script(const gchar *args)
   else
     argv[5] = ".";
 
-  // Update environment variables for the helper script
+  // Update parameters for the helper script
+  winsplit = settings_opt_get_int("extsay_split_win");
   if (winsplit) {
     gint winheight = settings_opt_get_int("extsay_win_height");
     argv[6] = "winsplit";       // Helper script parameter #2
@@ -87,6 +91,8 @@ static void screen_run_script(const gchar *args)
 
   if (!ret)
     scr_LogPrint(LPRINT_NORMAL, err->message);
+
+  g_free(fpath);
 }
 
 static void do_extsayng(gchar *args)
