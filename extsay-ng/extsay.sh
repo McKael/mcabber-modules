@@ -48,11 +48,11 @@ else
 fi
 echo $cmd >> $FIFOPATH
 
+# Do not remove the file too soon
+setsid sh -c "cd / && sleep 20 && rm $tf & :" /dev/null 2>&1 < /dev/null
+
 if [ x$winsplit = x"winsplit" ]; then
     screen -r -X remove
 fi
-
-# Do not remove the file too soon
-setsid sh -c "cd / && sleep 20 && rm $tf & :" /dev/null 2>&1 < /dev/null
 
 exit 0
