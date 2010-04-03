@@ -8,6 +8,12 @@ Copy the script extsay.sh to some place on your system and set the mcabber
 option 'extsay_script_path' to the file path.  You can set it in your mcabber
 configuration file.
 
+Set the option 'extsay_split_win' to 1 if you want the helper script to
+split the screen window and open the editor below the mcabber screen window.
+This may not work for you, according to your screen configuration.
+The option 'extsay_win_height' can be used to specify the height of the newly
+created window, if you have enabled splitting.
+
  /EXTSAY [jid]
 
 When you type /extsay, the module will send a command to screen to open a
