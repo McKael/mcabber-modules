@@ -42,7 +42,7 @@ $editor $tf
 
 # Send the message using MCabber's pipe
 if [ -s $tf ]; then
-    cmd="say_to -f $tf $jid"
+    cmd="say_to -q -f $tf $jid"
 else
     cmd="echo [extsay] The file has not been modified.  Message cancelled."
 fi
