@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <mcabber/modules.h>
 #include <mcabber/commands.h>
 #include <mcabber/hooks.h>
-#include <mcabber/logprint.h>
+#include <mcabber/screen.h>
 
 static void lastmsg_init(void);
 static void lastmsg_uninit(void);
@@ -56,6 +56,7 @@ struct lastm_T {
 static void do_lastmsg(char *args)
 {
   GSList *li;
+  guint count = 0;
 
   if (!lastmsg_list) {
     scr_log_print(LPRINT_NORMAL, "You have no new message.");
@@ -70,9 +71,15 @@ static void do_lastmsg(char *args)
     g_free(lastm_item->mucname);
     g_free(lastm_item->nickname);
     g_free(lastm_item->msg);
+    count++;
   }
   g_slist_free(lastmsg_list);
   lastmsg_list = NULL;
+  if (count*2 > scr_getlogwinheight()) {
+    scr_setmsgflag_if_needed(SPECIAL_BUFFER_STATUS_ID, TRUE);
+    scr_setattentionflag_if_needed(SPECIAL_BUFFER_STATUS_ID, TRUE,
+                                   ROSTER_UI_PRIO_STATUS_WIN_MESSAGE, prio_max);
+  }
 }
 
 static guint last_message_hh(const gchar *hookname, hk_arg_t *args,
@@ -148,6 +155,7 @@ static void lastmsg_init(void)
   /* Add command */
   cmd_add("lastmsg", "Display last missed messages", 0, 0, do_lastmsg, NULL);
 
+  /* Add hook handlers */
   last_message_hid = hk_add_handler(last_message_hh, HOOK_POST_MESSAGE_IN,
                                     G_PRIORITY_DEFAULT_IDLE, NULL);
   last_status_hid  = hk_add_handler(last_status_hh, HOOK_MY_STATUS_CHANGE,
@@ -161,9 +169,11 @@ static void lastmsg_uninit(void)
 
   /* Unregister command */
   cmd_del("lastmsg");
+  /* Unregister handlers */
   hk_del_handler(HOOK_POST_MESSAGE_IN, last_message_hid);
   hk_del_handler(HOOK_MY_STATUS_CHANGE, last_status_hid);
 
+  /* Clean up data */
   for (li = lastmsg_list; li ; li = g_slist_next(li)) {
     struct lastm_T *lastm_item = li->data;
     g_free(lastm_item->mucname);
