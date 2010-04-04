@@ -1,8 +1,9 @@
 /*
    Copyright 2010 Mikael Berthe
 
-  Module "extsayng"   -- adds a /extsay command
+  Module "extsay"     -- adds a /extsay command
                          Spawns an external editor, using screen
+                         See the README file
 
 This module is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -31,18 +32,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <mcabber/utils.h>
 #include <mcabber/logprint.h>
 
-static void extsayng_init(void);
-static void extsayng_uninit(void);
+static void extsay_init(void);
+static void extsay_uninit(void);
 
 /* Module description */
-module_info_t info_extsayng = {
+module_info_t info_extsay = {
         .branch         = MCABBER_BRANCH,
         .api            = MCABBER_API_VERSION,
-        .version        = "0.01",
+        .version        = "0.02",
         .description    = "Use external editor to send a message",
         .requires       = NULL,
-        .init           = extsayng_init,
-        .uninit         = extsayng_uninit,
+        .init           = extsay_init,
+        .uninit         = extsay_uninit,
         .next           = NULL,
 };
 
@@ -96,7 +97,7 @@ static void screen_run_script(const gchar *args)
   g_free(fpath);
 }
 
-static void do_extsayng(gchar *args)
+static void do_extsay(gchar *args)
 {
   gboolean expandfjid = FALSE;
   gchar *fjid;
@@ -140,13 +141,13 @@ static void do_extsayng(gchar *args)
   g_free(fjid);
 }
 
-static void extsayng_init(void)
+static void extsay_init(void)
 {
   cmd_add("extsay", "Use external editor to write a message",
-          COMPL_JID, 0, do_extsayng, NULL);
+          COMPL_JID, 0, do_extsay, NULL);
 }
 
-static void extsayng_uninit(void)
+static void extsay_uninit(void)
 {
   cmd_del("extsay");
 }
