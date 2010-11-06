@@ -1,0 +1,7 @@
+load ignore_auth
+
+ignore_auth *@icq*
+ignore_auth spammer@jabber.org
+
+set ignore_auth = 1
+

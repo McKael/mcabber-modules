@@ -109,6 +109,10 @@ AC_ARG_ENABLE(module-extsayng,
               AC_HELP_STRING([--enable-module-extsayng],
                              [enable module extsayng]),
               enable_module_extsayng=$enableval)
+AC_ARG_ENABLE(module-ignore_auth,
+              AC_HELP_STRING([--enable-module-ignore_auth],
+                             [enable module ignore_auth]),
+              enable_module_ignore_auth=$enableval)
 AC_ARG_ENABLE(module-info_msgcount,
               AC_HELP_STRING([--enable-module-info_msgcount],
                              [enable module info_msgcount]),
@@ -134,6 +138,10 @@ AM_CONDITIONAL([INSTALL_MODULE_EXTSAYNG],
                [test x"${enable_all_modules}" = x"yes" -o \
                      x"${enable_module_extsayng}" = x"yes"])
 
+AM_CONDITIONAL([INSTALL_MODULE_IGNORE_AUTH],
+               [test x"${enable_all_modules}" = x"yes" -o \
+                     x"${enable_module_ignore_auth}" = x"yes"])
+
 AM_CONDITIONAL([INSTALL_MODULE_INFO_MSGCOUNT],
                [test x"${enable_all_modules}" = x"yes" -o \
                      x"${enable_module_info_msgcount}" = x"yes"])
@@ -149,6 +157,7 @@ AM_CONDITIONAL([INSTALL_MODULE_LASTMSG],
 AC_CONFIG_FILES([clock/Makefile
                  comment/Makefile
                  extsay-ng/Makefile
+                 ignore_auth/Makefile
                  info_msgcount/Makefile
                  killpresence/Makefile
                  lastmsg/Makefile
