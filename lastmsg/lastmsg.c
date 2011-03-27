@@ -43,6 +43,10 @@ module_info_t info_lastmsg = {
         .next           = NULL,
 };
 
+#ifdef MCABBER_API_HAVE_CMD_ID
+static gpointer lastmsg_cmdid;
+#endif
+
 static GSList *lastmsg_list;
 
 static guint last_message_hid, last_status_hid;
@@ -153,7 +157,12 @@ static guint last_status_hh(const gchar *hookname, hk_arg_t *args,
 static void lastmsg_init(void)
 {
   /* Add command */
+#ifdef MCABBER_API_HAVE_CMD_ID
+  lastmsg_cmdid = cmd_add("lastmsg", "Display last missed messages", 0, 0,
+                          do_lastmsg, NULL);
+#else
   cmd_add("lastmsg", "Display last missed messages", 0, 0, do_lastmsg, NULL);
+#endif
 
   /* Add hook handlers */
   last_message_hid = hk_add_handler(last_message_hh, HOOK_POST_MESSAGE_IN,
@@ -168,7 +177,11 @@ static void lastmsg_uninit(void)
   GSList *li;
 
   /* Unregister command */
+#ifdef MCABBER_API_HAVE_CMD_ID
+  cmd_del(lastmsg_cmdid);
+#else
   cmd_del("lastmsg");
+#endif
   /* Unregister handlers */
   hk_del_handler(HOOK_POST_MESSAGE_IN, last_message_hid);
   hk_del_handler(HOOK_MY_STATUS_CHANGE, last_status_hid);

@@ -37,6 +37,10 @@ module_info_t info_comment = {
         .next           = NULL,
 };
 
+#ifdef MCABBER_API_HAVE_CMD_ID
+static gpointer comment_cmdid;
+#endif
+
 static void do_comment(char *args)
 {
   /* This is actually a no-op! */
@@ -46,14 +50,22 @@ static void do_comment(char *args)
 static void comment_init(void)
 {
   /* Add command */
+#ifdef MCABBER_API_HAVE_CMD_ID
+  comment_cmdid = cmd_add("#", "Ignore", 0, 0, do_comment, NULL);
+#else
   cmd_add("#", "Ignore", 0, 0, do_comment, NULL);
+#endif
 }
 
 /* Deinitialization */
 static void comment_uninit(void)
 {
   /* Unregister command */
+#ifdef MCABBER_API_HAVE_CMD_ID
+  cmd_del(comment_cmdid);
+#else
   cmd_del("comment");
+#endif
 }
 
 /* vim: set expandtab cindent cinoptions=>2\:2(0:  For Vim users... */

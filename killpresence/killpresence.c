@@ -46,6 +46,10 @@ module_info_t info_killpresence = {
         .next           = NULL,
 };
 
+#ifdef MCABBER_API_HAVE_CMD_ID
+static gpointer killpresence_cmdid, killchatstates_cmdid;
+#endif
+
 static void do_killpresence(char *args)
 {
   char *jid_utf8, *res;
@@ -141,18 +145,30 @@ static void do_killchatstates(char *args)
 static void killpresence_init(void)
 {
   /* Add command */
+#ifdef MCABBER_API_HAVE_CMD_ID
+  killpresence_cmdid = cmd_add("killpresence", "Ignore presence",
+                               COMPL_JID, 0, do_killpresence, NULL);
+  killchatstates_cmdid = cmd_add("killchatstates", "Reset chatstates",
+                                 COMPL_JID, 0, do_killchatstates, NULL);
+#else
   cmd_add("killpresence", "Ignore presence", COMPL_JID, 0,
           do_killpresence, NULL);
   cmd_add("killchatstates", "Reset chatstates", COMPL_JID, 0,
           do_killchatstates, NULL);
+#endif
 }
 
 /* Uninitialization */
 static void killpresence_uninit(void)
 {
   /* Unregister command */
+#ifdef MCABBER_API_HAVE_CMD_ID
+  cmd_del(killpresence_cmdid);
+  cmd_del(killchatstates_cmdid);
+#else
   cmd_del("killpresence");
   cmd_del("killchatstates");
+#endif
 }
 
 /* vim: set expandtab cindent cinoptions=>2\:2(0 sw=2 ts=2:  For Vim users... */

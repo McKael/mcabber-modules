@@ -40,6 +40,10 @@ module_info_t info_ignore_auth = {
         .next            = NULL,
 };
 
+#ifdef MCABBER_API_HAVE_CMD_ID
+static gpointer ignoreauth_cmdid;
+#endif
+
 GSList *regexlist = NULL;
 static guint ignore_auth_hid = 0;  /* Hook handler id */
 
@@ -111,7 +115,11 @@ static void do_ignore_auth(char *args)
 static void ignore_auth_init(void)
 {
   /* Add command */
+#ifdef MCABBER_API_HAVE_CMD_ID
+  ignoreauth_cmdid = cmd_add("ignore_auth", "", 0, 0, do_ignore_auth, NULL);
+#else
   cmd_add("ignore_auth", "", 0, 0, do_ignore_auth, NULL);
+#endif
   /* Add handler */
   ignore_auth_hid = hk_add_handler(ignore_hh, HOOK_SUBSCRIPTION,
                                    G_PRIORITY_DEFAULT_IDLE, NULL);
@@ -123,7 +131,11 @@ static void ignore_auth_uninit(void)
 {
   GSList *head;
   /* Unregister command */
+#ifdef MCABBER_API_HAVE_CMD_ID
+  cmd_del(ignoreauth_cmdid);
+#else
   cmd_del("ignore_auth");
+#endif
   /* Unregister event handler */
   hk_del_handler(HOOK_SUBSCRIPTION, ignore_auth_hid);
   /* unref every regex */

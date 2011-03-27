@@ -47,6 +47,10 @@ module_info_t info_extsay = {
         .next           = NULL,
 };
 
+#ifdef MCABBER_API_HAVE_CMD_ID
+static gpointer extsay_cmdid;
+#endif
+
 
 // Run the external helper script with parameters
 static void screen_run_script(const gchar *args)
@@ -143,13 +147,22 @@ static void do_extsay(gchar *args)
 
 static void extsay_init(void)
 {
+#ifdef MCABBER_API_HAVE_CMD_ID
+  extsay_cmdid = cmd_add("extsay", "Use external editor to write a message",
+                         COMPL_JID, 0, do_extsay, NULL);
+#else
   cmd_add("extsay", "Use external editor to write a message",
           COMPL_JID, 0, do_extsay, NULL);
+#endif
 }
 
 static void extsay_uninit(void)
 {
+#ifdef MCABBER_API_HAVE_CMD_ID
+  cmd_del(extsay_cmdid);
+#else
   cmd_del("extsay");
+#endif
 }
 
 /* vim: set expandtab cindent cinoptions=>2\:2(0:  For Vim users... */
