@@ -38,8 +38,11 @@ static void killpresence_uninit(void);
 module_info_t info_killpresence = {
         .branch         = MCABBER_BRANCH,
         .api            = MCABBER_API_VERSION,
-        .version        = "0.01",
-        .description    = "Ignore an item's current presence",
+        .version        = "0.02",
+        .description    = "Ignore an item's current presence(s)\n"
+                          " Provides the following commands:\n"
+                          " /killpresence $fulljid\n"
+                          " /killchatstates $fulljid",
         .requires       = NULL,
         .init           = killpresence_init,
         .uninit         = killpresence_uninit,
@@ -54,22 +57,38 @@ static void do_killpresence(char *args)
 {
   char *jid_utf8, *res;
 
-  if (!args || !*args)
+  if (!args || !*args) {
+    scr_log_print(LPRINT_NORMAL, "I need a full JID.");
     return;
+  }
 
   jid_utf8 = to_utf8(args);
   if (!jid_utf8)
     return;
 
   res = strchr(jid_utf8, JID_RESOURCE_SEPARATOR);
-  if (res)
+  if (res) {
     *res++ = '\0';
-  else
+  } else {
+    scr_log_print(LPRINT_NORMAL, "I need a /full/ JID.");
     return;
+  }
 
-  roster_setstatus(jid_utf8, res, 0,
-                   offline, "Killed by killpresence.",
-                   0L, role_none, affil_none, NULL);
+  if (!strcmp(res, "*")) {
+    // Kill all resources!
+    GSList *sl_user = roster_find(jid_utf8, jidsearch, ROSTER_TYPE_USER);
+    if (sl_user) {
+      scr_log_print(LPRINT_NORMAL,
+                    "Killing all resources from <%s> now!", jid_utf8);
+      buddy_del_all_resources(sl_user->data);
+    } else {
+      scr_log_print(LPRINT_NORMAL, "Cannot find <%s>...", jid_utf8);
+    }
+  } else {
+    roster_setstatus(jid_utf8, res, 0,
+                     offline, "Killed by killpresence.",
+                     0L, role_none, affil_none, NULL);
+  }
   buddylist_build();
   scr_draw_roster();
 
