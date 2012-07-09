@@ -104,15 +104,19 @@ static void reset_chat_states(const char *fulljid)
   struct xep0022 *xep22;
 
   rname = strchr(fulljid, JID_RESOURCE_SEPARATOR);
-  if (!rname++)
+  if (!rname++) {
+    scr_log_print(LPRINT_NORMAL, "I need a /full/ JID.");
     return;
+  }
 
   barejid = jidtodisp(fulljid);
   sl_buddy = roster_find(barejid, jidsearch, ROSTER_TYPE_USER);
   g_free(barejid);
 
-  if (!sl_buddy)
+  if (!sl_buddy) {
+    scr_log_print(LPRINT_NORMAL, "Resource not found.");
     return;
+  }
 
   xep85 = buddy_resource_xep85(sl_buddy->data, rname);
   xep22 = buddy_resource_xep22(sl_buddy->data, rname);
@@ -145,8 +149,10 @@ static void do_killchatstates(char *args)
 #if defined XEP0022 || defined XEP0085
   char *jid_utf8;
 
-  if (!args || !*args)
+  if (!args || !*args) {
+    scr_log_print(LPRINT_NORMAL, "I need a full JID.");
     return;
+  }
 
   jid_utf8 = to_utf8(args);
   if (!jid_utf8)
