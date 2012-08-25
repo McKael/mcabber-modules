@@ -3,8 +3,14 @@
  *
  * /killpresence fulljid
  *  Ignore current presence for the provided JID
+ *  Useful for kicking ghosts from the roster...
+ *  Shortcuts can be used for the full jid.  Example:
+ *    /killpresence ./resource
+ *  Also, resource '*' stands for all resources.
+ *
  * /killchatstates fulljid
  *  Reset chat states for the provided JID
+ *
  *
  * Copyright (C) 2010 Mikael Berthe <mikael@lilotux.net>
  *
@@ -38,7 +44,7 @@ static void killpresence_uninit(void);
 module_info_t info_killpresence = {
         .branch         = MCABBER_BRANCH,
         .api            = MCABBER_API_VERSION,
-        .version        = "0.02",
+        .version        = "0.03",
         .description    = "Ignore an item's current presence(s)\n"
                           " Provides the following commands:\n"
                           " /killpresence $fulljid\n"
@@ -56,6 +62,7 @@ static gpointer killpresence_cmdid, killchatstates_cmdid;
 static void do_killpresence(char *args)
 {
   char *jid_utf8, *res;
+  const char *targetjid = NULL;
 
   if (!args || !*args) {
     scr_log_print(LPRINT_NORMAL, "I need a full JID.");
@@ -69,23 +76,33 @@ static void do_killpresence(char *args)
   res = strchr(jid_utf8, JID_RESOURCE_SEPARATOR);
   if (res) {
     *res++ = '\0';
-  } else {
+    if (!strcmp(jid_utf8, ".")) {
+      if (current_buddy)
+        targetjid = CURRENT_JID;
+    } else {
+      targetjid = jid_utf8;
+    }
+  }
+
+  if (!targetjid) {
     scr_log_print(LPRINT_NORMAL, "I need a /full/ JID.");
+    g_free(jid_utf8);
     return;
   }
 
+
   if (!strcmp(res, "*")) {
     // Kill all resources!
-    GSList *sl_user = roster_find(jid_utf8, jidsearch, ROSTER_TYPE_USER);
+    GSList *sl_user = roster_find(targetjid, jidsearch, ROSTER_TYPE_USER);
     if (sl_user) {
       scr_log_print(LPRINT_NORMAL,
-                    "Killing all resources from <%s> now!", jid_utf8);
+                    "Killing all resources from <%s> now!", targetjid);
       buddy_del_all_resources(sl_user->data);
     } else {
-      scr_log_print(LPRINT_NORMAL, "Cannot find <%s>...", jid_utf8);
+      scr_log_print(LPRINT_NORMAL, "Cannot find <%s>...", targetjid);
     }
   } else {
-    roster_setstatus(jid_utf8, res, 0,
+    roster_setstatus(targetjid, res, 0,
                      offline, "Killed by killpresence.",
                      0L, role_none, affil_none, NULL);
   }
