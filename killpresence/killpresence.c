@@ -46,8 +46,6 @@
 static void killpresence_init(void);
 static void killpresence_uninit(void);
 
-static void do_probe(char *);
-
 /* Module description */
 module_info_t info_killpresence = {
         .branch         = MCABBER_BRANCH,
@@ -67,6 +65,45 @@ module_info_t info_killpresence = {
 #ifdef MCABBER_API_HAVE_CMD_ID
 static gpointer killpresence_cmdid, killchatstates_cmdid, probe_cmdid;
 #endif
+
+static void do_probe(char *args)
+{
+  char *jid_utf8;
+  LmMessage *m;
+  const char *targetjid = NULL;
+
+  if (!args || !*args) {
+    scr_log_print(LPRINT_NORMAL, "I need a JID.");
+    return;
+  }
+  if (strchr(args, JID_RESOURCE_SEPARATOR)) {
+    scr_log_print(LPRINT_NORMAL, "I need a *bare* JID.");
+    // XXX We could just drop the resource...
+    return;
+  }
+
+  if (!xmpp_is_online())
+    return;
+
+  jid_utf8 = to_utf8(args);
+  if (!jid_utf8)
+    return;
+
+  if (!strcmp(jid_utf8, ".")) {
+    if (current_buddy)
+      targetjid = CURRENT_JID;
+  } else {
+    targetjid = jid_utf8;
+  }
+
+  // Create presence message with type "probe"
+  m = lm_message_new(targetjid, LM_MESSAGE_TYPE_PRESENCE);
+  lm_message_node_set_attribute(m->node, "type", "probe");
+  lm_connection_send(lconnection, m, NULL);
+  lm_message_unref(m);
+  scr_log_print(LPRINT_LOGNORM, "Presence probe sent to <%s>.", targetjid);
+  g_free(jid_utf8);
+}
 
 static void do_killpresence(char *args)
 {
@@ -199,45 +236,6 @@ static void do_killchatstates(char *args)
 #else
   scr_log_print(LPRINT_NORMAL, "No Chat State support.");
 #endif
-}
-
-static void do_probe(char *args)
-{
-  char *jid_utf8;
-  LmMessage *m;
-  const char *targetjid = NULL;
-
-  if (!args || !*args) {
-    scr_log_print(LPRINT_NORMAL, "I need a JID.");
-    return;
-  }
-  if (strchr(args, JID_RESOURCE_SEPARATOR)) {
-    scr_log_print(LPRINT_NORMAL, "I need a *bare* JID.");
-    // XXX We could just drop the resource...
-    return;
-  }
-
-  if (!xmpp_is_online())
-    return;
-
-  jid_utf8 = to_utf8(args);
-  if (!jid_utf8)
-    return;
-
-  if (!strcmp(jid_utf8, ".")) {
-    if (current_buddy)
-      targetjid = CURRENT_JID;
-  } else {
-    targetjid = jid_utf8;
-  }
-
-  // Create presence message with type "probe"
-  m = lm_message_new(targetjid, LM_MESSAGE_TYPE_PRESENCE);
-  lm_message_node_set_attribute(m->node, "type", "probe");
-  lm_connection_send(lconnection, m, NULL);
-  lm_message_unref(m);
-  scr_log_print(LPRINT_LOGNORM, "Presence probe sent to <%s>.", targetjid);
-  g_free(jid_utf8);
 }
 
 
