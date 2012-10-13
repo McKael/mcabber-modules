@@ -1,15 +1,20 @@
 /*
  *  Module "killpresence" -- Ignore current presence of an item
  *
- * /killpresence fulljid
+ * /killpresence [-p] fulljid
  *  Ignore current presence for the provided JID
  *  Useful for kicking ghosts from the roster...
  *  Shortcuts can be used for the full jid.  Example:
  *    /killpresence ./resource
  *  Also, resource '*' stands for all resources.
+ *  If the option -p is given, a presence probe will be sent
+ *  to the user after removing the resource(s).
  *
  * /killchatstates fulljid
  *  Reset chat states for the provided JID
+ *
+ * /probe barejid
+ *  Send a presence probe to the provided JID
  *
  *
  * Copyright (C) 2010 Mikael Berthe <mikael@lilotux.net>
@@ -41,6 +46,8 @@
 static void killpresence_init(void);
 static void killpresence_uninit(void);
 
+static void do_probe(char *);
+
 /* Module description */
 module_info_t info_killpresence = {
         .branch         = MCABBER_BRANCH,
@@ -48,7 +55,7 @@ module_info_t info_killpresence = {
         .version        = "0.10",
         .description    = "Ignore an item's current presence(s)\n"
                           " Provides the following commands:\n"
-                          " /killpresence $fulljid\n"
+                          " /killpresence [-p] $fulljid\n"
                           " /killchatstates $fulljid"
                           " /probe $barejid",
         .requires       = NULL,
@@ -65,10 +72,17 @@ static void do_killpresence(char *args)
 {
   char *jid_utf8, *res;
   const char *targetjid = NULL;
+  bool probe = false;
 
   if (!args || !*args) {
     scr_log_print(LPRINT_NORMAL, "I need a full JID.");
     return;
+  }
+
+  if (!strncmp(args, "-p ", 3)) {
+    for (args += 3; *args && *args == ' '; args++)
+      ;
+    probe = true;
   }
 
   jid_utf8 = to_utf8(args);
@@ -110,6 +124,9 @@ static void do_killpresence(char *args)
   }
   buddylist_build();
   scr_draw_roster();
+
+  if (probe)
+    do_probe((char *)targetjid);
 
   g_free(jid_utf8);
 }
