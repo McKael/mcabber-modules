@@ -54,7 +54,7 @@ module_info_t info_killpresence = {
         .description    = "Ignore an item's current presence(s)\n"
                           " Provides the following commands:\n"
                           " /killpresence [-p] $fulljid\n"
-                          " /killchatstates $fulljid"
+                          " /killchatstates $fulljid\n"
                           " /probe $barejid",
         .requires       = NULL,
         .init           = killpresence_init,
