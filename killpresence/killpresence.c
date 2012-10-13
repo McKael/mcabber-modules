@@ -36,6 +36,7 @@
 #include <mcabber/roster.h>
 #include <mcabber/screen.h>
 #include <mcabber/utils.h>
+#include <mcabber/xmpp.h>
 
 static void killpresence_init(void);
 static void killpresence_uninit(void);
@@ -44,11 +45,12 @@ static void killpresence_uninit(void);
 module_info_t info_killpresence = {
         .branch         = MCABBER_BRANCH,
         .api            = MCABBER_API_VERSION,
-        .version        = "0.03",
+        .version        = "0.10",
         .description    = "Ignore an item's current presence(s)\n"
                           " Provides the following commands:\n"
                           " /killpresence $fulljid\n"
-                          " /killchatstates $fulljid",
+                          " /killchatstates $fulljid"
+                          " /probe $barejid",
         .requires       = NULL,
         .init           = killpresence_init,
         .uninit         = killpresence_uninit,
@@ -56,7 +58,7 @@ module_info_t info_killpresence = {
 };
 
 #ifdef MCABBER_API_HAVE_CMD_ID
-static gpointer killpresence_cmdid, killchatstates_cmdid;
+static gpointer killpresence_cmdid, killchatstates_cmdid, probe_cmdid;
 #endif
 
 static void do_killpresence(char *args)
@@ -182,6 +184,45 @@ static void do_killchatstates(char *args)
 #endif
 }
 
+static void do_probe(char *args)
+{
+  char *jid_utf8;
+  LmMessage *m;
+  const char *targetjid = NULL;
+
+  if (!args || !*args) {
+    scr_log_print(LPRINT_NORMAL, "I need a JID.");
+    return;
+  }
+  if (strchr(args, JID_RESOURCE_SEPARATOR)) {
+    scr_log_print(LPRINT_NORMAL, "I need a *bare* JID.");
+    // XXX We could just drop the resource...
+    return;
+  }
+
+  if (!xmpp_is_online())
+    return;
+
+  jid_utf8 = to_utf8(args);
+  if (!jid_utf8)
+    return;
+
+  if (!strcmp(jid_utf8, ".")) {
+    if (current_buddy)
+      targetjid = CURRENT_JID;
+  } else {
+    targetjid = jid_utf8;
+  }
+
+  // Create presence message with type "probe"
+  m = lm_message_new(targetjid, LM_MESSAGE_TYPE_PRESENCE);
+  lm_message_node_set_attribute(m->node, "type", "probe");
+  lm_connection_send(lconnection, m, NULL);
+  lm_message_unref(m);
+  scr_log_print(LPRINT_LOGNORM, "Presence probe sent to <%s>.", targetjid);
+  g_free(jid_utf8);
+}
+
 
 /* Initialization */
 static void killpresence_init(void)
@@ -192,11 +233,15 @@ static void killpresence_init(void)
                                COMPL_JID, 0, do_killpresence, NULL);
   killchatstates_cmdid = cmd_add("killchatstates", "Reset chatstates",
                                  COMPL_JID, 0, do_killchatstates, NULL);
+  probe_cmdid = cmd_add("probe", "Send a presence probe",
+                                 COMPL_JID, 0, do_probe, NULL);
 #else
   cmd_add("killpresence", "Ignore presence", COMPL_JID, 0,
           do_killpresence, NULL);
   cmd_add("killchatstates", "Reset chatstates", COMPL_JID, 0,
           do_killchatstates, NULL);
+  cmd_add("probe", "Send a presence probe", COMPL_JID, 0,
+          do_probe, NULL);
 #endif
 }
 
@@ -207,9 +252,11 @@ static void killpresence_uninit(void)
 #ifdef MCABBER_API_HAVE_CMD_ID
   cmd_del(killpresence_cmdid);
   cmd_del(killchatstates_cmdid);
+  cmd_del(probe_cmdid);
 #else
   cmd_del("killpresence");
   cmd_del("killchatstates");
+  cmd_del("probe");
 #endif
 }
 
