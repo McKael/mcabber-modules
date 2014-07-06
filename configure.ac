@@ -101,30 +101,41 @@ AC_ARG_ENABLE(module-clock,
               AC_HELP_STRING([--enable-module-clock],
                              [enable module clock]),
               enable_module_clock=$enableval)
+
 AC_ARG_ENABLE(module-comment,
               AC_HELP_STRING([--enable-module-comment],
                              [enable module comment]),
               enable_module_comment=$enableval)
+
 AC_ARG_ENABLE(module-extsayng,
               AC_HELP_STRING([--enable-module-extsayng],
                              [enable module extsayng]),
               enable_module_extsayng=$enableval)
+
 AC_ARG_ENABLE(module-ignore_auth,
               AC_HELP_STRING([--enable-module-ignore_auth],
                              [enable module ignore_auth]),
               enable_module_ignore_auth=$enableval)
+
 AC_ARG_ENABLE(module-info_msgcount,
               AC_HELP_STRING([--enable-module-info_msgcount],
                              [enable module info_msgcount]),
               enable_module_info_msgcount=$enableval)
+
 AC_ARG_ENABLE(module-killpresence,
               AC_HELP_STRING([--enable-module-killpresence],
                              [enable module killpresence]),
               enable_module_lastmsg=$enableval)
+
 AC_ARG_ENABLE(module-lastmsg,
               AC_HELP_STRING([--enable-module-lastmsg],
                              [enable module lastmsg]),
               enable_module_lastmsg=$enableval)
+
+AC_ARG_ENABLE(module-show_mdr,
+              AC_HELP_STRING([--enable-module-show_mdr],
+                             [enable module show_mdr]),
+              enable_module_show_mdr=$enableval)
 
 AM_CONDITIONAL([INSTALL_MODULE_CLOCK],
                [test x"${enable_all_modules}" = x"yes" -o \
@@ -154,6 +165,10 @@ AM_CONDITIONAL([INSTALL_MODULE_LASTMSG],
                [test x"${enable_all_modules}" = x"yes" -o \
                      x"${enable_module_lastmsg}" = x"yes"])
 
+AM_CONDITIONAL([INSTALL_MODULE_SHOW_MDR],
+               [test x"${enable_all_modules}" = x"yes" -o \
+                     x"${enable_module_show_mdr}" = x"yes"])
+
 AC_CONFIG_FILES([clock/Makefile
                  comment/Makefile
                  extsay-ng/Makefile
@@ -161,5 +176,6 @@ AC_CONFIG_FILES([clock/Makefile
                  info_msgcount/Makefile
                  killpresence/Makefile
                  lastmsg/Makefile
+                 show_mdr/Makefile
                  Makefile])
 AC_OUTPUT
