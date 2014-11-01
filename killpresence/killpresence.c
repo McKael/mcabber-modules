@@ -174,7 +174,9 @@ static void reset_chat_states(const char *fulljid)
   char *rname, *barejid;
   GSList *sl_buddy;
   struct xep0085 *xep85;
+#if defined XEP0022
   struct xep0022 *xep22;
+#endif
 
   rname = strchr(fulljid, JID_RESOURCE_SEPARATOR);
   if (!rname++) {
@@ -192,7 +194,9 @@ static void reset_chat_states(const char *fulljid)
   }
 
   xep85 = buddy_resource_xep85(sl_buddy->data, rname);
+#if defined XEP0022
   xep22 = buddy_resource_xep22(sl_buddy->data, rname);
+#endif
 
   // Reset Chat States (0085)
   if (xep85) {
@@ -200,6 +204,7 @@ static void reset_chat_states(const char *fulljid)
       xep85->support = CHATSTATES_SUPPORT_UNKNOWN;
     xep85->last_state_rcvd = ROSTER_EVENT_NONE;
   }
+#if defined XEP0022
   // Reset Message Events (0022)
   if (xep22) {
     if (xep22->support == CHATSTATES_SUPPORT_PROBED)
@@ -210,6 +215,7 @@ static void reset_chat_states(const char *fulljid)
     xep22->last_msgid_sent = NULL;
     xep22->last_msgid_rcvd = NULL;
   }
+#endif
 
   // Finally reset the roster hint for the UI
   buddy_resource_setevents(sl_buddy->data, rname, ROSTER_EVENT_NONE);
