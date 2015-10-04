@@ -38,7 +38,7 @@ module_info_t info_show_mdr = {
         .api            = MCABBER_API_VERSION,
   */
         .branch         = "dev",
-        .api            = 35,     // HOOK_MDR_RECEIVED was included in dev-33
+        .api            = 38,     // HOOK_MDR_RECEIVED was included in dev-33
         .version        = "0.01",
         .description    = "Show delivery receipts in the log window.",
         .requires       = NULL,
