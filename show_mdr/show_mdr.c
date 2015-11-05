@@ -69,8 +69,11 @@ static int number_of_resources(const char *fjid)
   bud = sl_user->data;
   resources = buddy_getresources(bud);
 
-  for (p_res = resources ; p_res ; p_res = g_slist_next(p_res))
+  for (p_res = resources ; p_res ; p_res = g_slist_next(p_res)) {
     n++;
+    g_free(p_res->data);
+  }
+  g_slist_free(resources);
 
   return n;
 }
