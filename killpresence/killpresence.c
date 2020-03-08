@@ -219,7 +219,7 @@ static void reset_chat_states(const char *fulljid)
 
   // Finally reset the roster hint for the UI
   buddy_resource_setevents(sl_buddy->data, rname, ROSTER_EVENT_NONE);
-  update_roster = TRUE;
+  scr_update_roster();
 }
 #endif
 
